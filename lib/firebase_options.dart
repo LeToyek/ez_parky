@@ -63,6 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '705319478880',
     projectId: 'ez-parky',
     storageBucket: 'ez-parky.appspot.com',
+    androidClientId: '705319478880-u2jg43te52ciinv6sd5q0ejpaovjc1dl.apps.googleusercontent.com',
+    iosClientId: '705319478880-u6u0up24m4smtvf7q6hd03i96ppifen5.apps.googleusercontent.com',
     iosBundleId: 'com.example.ezParky',
   );
 }
