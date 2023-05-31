@@ -12,7 +12,20 @@
           "package_name": "com.example.ez_parky"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "705319478880-u2jg43te52ciinv6sd5q0ejpaovjc1dl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ez_parky",
+            "certificate_hash": "a7b035034ce2da92ab4cc0a0519786640898c774"
+          }
+        },
+        {
+          "client_id": "705319478880-do7ci7ko2q8ccnj1qaja64dfoqshhq40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBOOTyhrWT_JsSr1YX5M_kb7VCrMZivGEU"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "705319478880-do7ci7ko2q8ccnj1qaja64dfoqshhq40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "705319478880-u6u0up24m4smtvf7q6hd03i96ppifen5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ezParky"
+              }
+            }
+          ]
         }
       }
     }
