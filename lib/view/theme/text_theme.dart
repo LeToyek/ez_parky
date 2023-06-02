@@ -1,45 +1,47 @@
+import 'package:ez_parky/view/theme/color.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-const ezTextTheme = TextTheme(
-  displayLarge: TextStyle(
+var ezTextTheme = TextTheme(
+  displayLarge: GoogleFonts.nunito(
     fontSize: 24.0,
     fontWeight: FontWeight.bold,
     color: Colors.black,
   ),
-  displayMedium: TextStyle(
+  displayMedium: GoogleFonts.nunito(
     fontSize: 20.0,
     fontWeight: FontWeight.bold,
     color: Colors.black,
   ),
-  bodyLarge: TextStyle(
+  bodyLarge: GoogleFonts.nunito(
     fontSize: 16.0,
     color: Colors.black,
   ),
-  bodyMedium: TextStyle(
+  bodyMedium: GoogleFonts.nunito(
     fontSize: 14.0,
     color: Colors.black,
   ),
-  labelLarge: TextStyle(
+  labelLarge: GoogleFonts.nunito(
     fontSize: 16.0,
     fontWeight: FontWeight.bold,
     color: Colors.white,
   ),
-  titleMedium: TextStyle(
+  titleMedium: GoogleFonts.nunito(
     fontSize: 14.0,
     fontWeight: FontWeight.bold,
     color: Colors.black,
   ),
-  titleSmall: TextStyle(
+  titleSmall: GoogleFonts.nunito(
     fontSize: 12.0,
     color: Colors.grey,
   ),
-  bodySmall: TextStyle(
+  bodySmall: GoogleFonts.nunito(
     fontSize: 12.0,
     color: Colors.grey,
   ),
-  labelSmall: TextStyle(
+  labelSmall: GoogleFonts.nunito(
     fontSize: 10.0,
     fontWeight: FontWeight.bold,
-    color: Colors.green,
+    color: ezBlue,
   ),
 );
