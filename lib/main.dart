@@ -31,7 +31,6 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouteProvider);
-
     return MaterialApp.router(
       title: 'ez parky',
       routerConfig: router,

@@ -1,4 +1,4 @@
-import 'package:ez_parky/view/screen/home_screen.dart';
+import 'package:ez_parky/view/screen/index.dart';
 import 'package:ez_parky/view/screen/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
@@ -10,7 +10,7 @@ final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final _appRoutes = GoRouter(
     initialLocation:
-        FirebaseAuth.instance.currentUser == null ? '/sign-in' : '/home',
+        FirebaseAuth.instance.currentUser == null ? '/sign-in' : '/',
     routes: [
       GoRoute(
         name: SplashScreen.routeName,
@@ -18,16 +18,16 @@ final _appRoutes = GoRouter(
         builder: (context, state) => const SplashScreen(),
       ),
       GoRoute(
-        name: HomeScreen.routeName,
-        path: HomeScreen.routePath,
-        builder: (context, state) => const HomeScreen(),
+        name: IndexScreen.routeName,
+        path: IndexScreen.routePath,
+        builder: (context, state) => const IndexScreen(),
       ),
       GoRoute(
         path: '/sign-in',
         builder: (context, state) => SignInScreen(
           actions: [
             AuthStateChangeAction<SignedIn>((context, state) {
-              context.go(HomeScreen.routePath);
+              context.go(IndexScreen.routePath);
             }),
           ],
           styles: const {
