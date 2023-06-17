@@ -54,6 +54,7 @@ class DefaultFirebaseOptions {
     appId: '1:705319478880:android:71eef0698e18dfd2bb0505',
     messagingSenderId: '705319478880',
     projectId: 'ez-parky',
+    databaseURL: 'https://ez-parky-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'ez-parky.appspot.com',
   );
 
@@ -62,6 +63,7 @@ class DefaultFirebaseOptions {
     appId: '1:705319478880:ios:f29b5de4cbddb385bb0505',
     messagingSenderId: '705319478880',
     projectId: 'ez-parky',
+    databaseURL: 'https://ez-parky-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'ez-parky.appspot.com',
     androidClientId: '705319478880-u2jg43te52ciinv6sd5q0ejpaovjc1dl.apps.googleusercontent.com',
     iosClientId: '705319478880-u6u0up24m4smtvf7q6hd03i96ppifen5.apps.googleusercontent.com',
