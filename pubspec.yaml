@@ -52,6 +52,7 @@ dependencies:
   firebase_database: ^10.2.3
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

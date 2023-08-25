@@ -1,4 +1,3 @@
-import 'package:ez_parky/view/screen/main/home_screen.dart';
 import 'package:ez_parky/view/screen/main/scanner_screen.dart';
 import 'package:ez_parky/view/screen/main/setting_screen.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
@@ -37,10 +36,6 @@ class _IndexScreenState extends State<IndexScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.car_rental),
-            label: 'Parking',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'Setting',
           ),
@@ -58,12 +53,10 @@ class _IndexScreenState extends State<IndexScreen> {
   Widget _buildPageContent(int index) {
     switch (index) {
       case 0:
-        return const HomeScreen();
-      case 1:
         return const ScannerScreen();
-      case 2:
+      case 1:
         return const SettingScreen();
-      case 3:
+      case 2:
         return const ProfileScreen();
       default:
         return Container();
