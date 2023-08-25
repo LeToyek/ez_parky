@@ -7,6 +7,6 @@ class EzProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return EzScaffold(title: 'Profile', isDark: false, ezBody: Container());
+    return EzScaffold(title: 'Profile', ezBody: Container());
   }
 }

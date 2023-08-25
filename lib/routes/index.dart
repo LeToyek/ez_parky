@@ -1,4 +1,5 @@
 import 'package:ez_parky/view/screen/index.dart';
+import 'package:ez_parky/view/screen/parking/parking_screen.dart';
 import 'package:ez_parky/view/screen/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
@@ -69,6 +70,10 @@ final _appRoutes = GoRouter(
                   })
                 ],
               )),
+      GoRoute(
+          path: ParkingScreen.routePath,
+          name: ParkingScreen.routeName,
+          builder: (context, state) => const ParkingScreen()),
     ]);
 
 final appRouteProvider = Provider((ref) => _appRoutes);

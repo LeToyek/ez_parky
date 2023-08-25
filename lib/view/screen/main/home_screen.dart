@@ -12,7 +12,6 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final qrData = ref.watch(QrCodeProvider);
     return EzScaffold(
-      isDark: true,
       title: "Home",
       ezBody: Center(
           child: qrData.when(

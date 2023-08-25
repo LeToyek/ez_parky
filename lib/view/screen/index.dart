@@ -1,5 +1,5 @@
 import 'package:ez_parky/view/screen/main/home_screen.dart';
-import 'package:ez_parky/view/screen/main/park_screen.dart';
+import 'package:ez_parky/view/screen/main/scanner_screen.dart';
 import 'package:ez_parky/view/screen/main/setting_screen.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,9 +23,12 @@ class _IndexScreenState extends State<IndexScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorTheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: _buildPageContent(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: colorTheme.primary,
+        unselectedItemColor: colorTheme.onBackground,
         showSelectedLabels: false,
         showUnselectedLabels: false,
         items: const <BottomNavigationBarItem>[
@@ -57,7 +60,7 @@ class _IndexScreenState extends State<IndexScreen> {
       case 0:
         return const HomeScreen();
       case 1:
-        return const ParkScreen();
+        return const ScannerScreen();
       case 2:
         return const SettingScreen();
       case 3:

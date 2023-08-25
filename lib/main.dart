@@ -1,3 +1,4 @@
+import 'package:ez_parky/constants.dart';
 import 'package:ez_parky/routes/index.dart';
 import 'package:ez_parky/view/theme/index.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,6 +20,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await Hive.initFlutter();
+  final box = await Hive.openBox(boxName);
   FirebaseUIAuth.configureProviders([
     email_auth.EmailAuthProvider(),
     GoogleProvider(clientId: dotenv.env['GOOGLE_CLIENT_ID'].toString())
@@ -36,7 +38,7 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'ez parky',
       routerConfig: router,
-      theme: ezThemeData,
+      theme: lightTheme,
     );
   }
 }
