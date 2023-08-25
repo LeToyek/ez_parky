@@ -1,9 +1,8 @@
-import 'package:ez_parky/repository/provider/global.dart';
+import 'package:ez_parky/repository/provider/global_provider.dart';
 import 'package:ez_parky/view/layouts/index.dart';
 import 'package:ez_parky/view/screen/content/main_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class ParkScreen extends ConsumerWidget {
@@ -38,7 +37,7 @@ class ParkScreen extends ConsumerWidget {
                               content: Text(barcode.rawValue!),
                             ),
                           );
-                          context.push('/profile');
+                          // context.push('/profile');
                         }),
                   ),
                 ],

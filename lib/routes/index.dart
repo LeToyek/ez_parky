@@ -37,7 +37,7 @@ final _appRoutes = GoRouter(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
             child: const Center(
               child: Text(
-                'Logos',
+                'Logo',
                 style: TextStyle(
                   fontSize: 40,
                   color: Colors.black,

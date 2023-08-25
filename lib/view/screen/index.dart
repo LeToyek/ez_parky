@@ -1,7 +1,7 @@
 import 'package:ez_parky/view/screen/main/home_screen.dart';
 import 'package:ez_parky/view/screen/main/park_screen.dart';
-import 'package:ez_parky/view/screen/main/profile_screen.dart';
 import 'package:ez_parky/view/screen/main/setting_screen.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 
 class IndexScreen extends StatefulWidget {
@@ -61,7 +61,7 @@ class _IndexScreenState extends State<IndexScreen> {
       case 2:
         return const SettingScreen();
       case 3:
-        return const EzProfileScreen();
+        return const ProfileScreen();
       default:
         return Container();
     }

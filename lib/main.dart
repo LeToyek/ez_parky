@@ -8,6 +8,7 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'firebase_options.dart';
 
@@ -17,6 +18,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await Hive.initFlutter();
   FirebaseUIAuth.configureProviders([
     email_auth.EmailAuthProvider(),
     GoogleProvider(clientId: dotenv.env['GOOGLE_CLIENT_ID'].toString())

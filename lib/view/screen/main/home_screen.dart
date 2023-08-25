@@ -1,4 +1,4 @@
-import 'package:ez_parky/repository/provider/qr_code.dart';
+import 'package:ez_parky/repository/provider/qr_code_provider.dart';
 import 'package:ez_parky/view/layouts/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
