@@ -1,9 +1,7 @@
 import 'package:ez_parky/repository/provider/scanner_provider.dart';
 import 'package:ez_parky/view/layouts/index.dart';
-import 'package:ez_parky/view/screen/parking/invoice_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 // Other imports...
 
@@ -41,29 +39,105 @@ class CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final scannerNotifier = ref.read(scannerProvider.notifier);
 
     try {
-      final data = await scannerNotifier.getParkingGate(barcode.rawValue!);
+      final gateID = await scannerNotifier.getGateIDFromLocal();
 
-      if (barcode.rawValue! == data.id!) {
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: const Text("Checkout"),
-                  content: const Text("Apakah anda yakin ingin checkout?"),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          _isScanned = false;
-                          context.push(InvoiceScreen.routePath);
-                        },
-                        child: const Text("Ya")),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("Tidak")),
-                  ],
-                ));
+      if (context.mounted) {
+        if (barcode.rawValue! != gateID) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              content: const Text("QR tidak ditemukan")));
+          _isScanned = false;
+          return;
+        }
       }
+
+      // final data = await scannerNotifier.getParkingGate(barcode.rawValue!);
+      showModalBottomSheet(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(24),
+            ),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          context: context,
+          builder: (context) => SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Pembayaran",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .apply(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onBackground,
+                                      fontWeightDelta: 2,
+                                      fontSizeDelta: 4)),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      Text("Nama",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyLarge!.apply(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeightDelta: 2,
+                              fontSizeDelta: 8)),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Text("Penanganan",
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context).textTheme.bodyMedium!.apply(
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontWeightDelta: 2,
+                              fontSizeDelta: 4)),
+                      Text("Sub Judul",
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context).textTheme.bodyMedium!.apply(
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontWeightDelta: 1,
+                              fontSizeDelta: 2)),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Text("Obat",
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context).textTheme.bodyMedium!.apply(
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontWeightDelta: 2,
+                              fontSizeDelta: 4)),
+                      Text("Sub Judul",
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context).textTheme.bodyMedium!.apply(
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontWeightDelta: 1,
+                              fontSizeDelta: 2)),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Text("Gambar Tanaman",
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context).textTheme.bodyMedium!.apply(
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontWeightDelta: 2,
+                              fontSizeDelta: 4)),
+                    ],
+                  ),
+                ),
+              ));
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("QR tidak ditemukan")));
@@ -98,10 +172,11 @@ class CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 startDelay: true,
                 onDetect: (capture) {
                   if (!_isScanned) {
+                    _isScanned = true;
+
                     Barcode barcode = capture.barcodes.first;
                     getBarcode(barcode);
                   }
-                  _isScanned = true;
                 },
               ),
             ),

@@ -31,12 +31,24 @@ class DurationService {
       String id, int price) async {
     try {
       DurationModel durationModel = DurationModel(
-          start: DateTime.now().toString(),
-          end: DateTime.now().toString(),
-          price: price);
+          start: DateTime.now().toString(), end: "", price: price);
       final res =
           await getDuartionServiceCollectionRef(id).add(durationModel.toJson());
+
+      // final box = await Hive.openBox(ParkingGateService.sensorBoxName);
+
       return res;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<void> setDurationDoc(String gateID, String durationID) async {
+    try {
+      final res = getDuartionServiceCollectionRef(gateID).doc(durationID);
+      final updated = await res.update({
+        'end': DateTime.now().toString(),
+      });
     } catch (e) {
       rethrow;
     }

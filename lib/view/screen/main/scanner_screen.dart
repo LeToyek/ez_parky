@@ -1,4 +1,5 @@
 import 'package:ez_parky/repository/provider/scanner_provider.dart';
+import 'package:ez_parky/services/duration_service.dart';
 import 'package:ez_parky/view/layouts/index.dart';
 import 'package:ez_parky/view/screen/parking/parking_screen.dart';
 import 'package:flutter/material.dart';
@@ -42,9 +43,6 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
 
     try {
       setState(() {
-        _isScanned = true;
-      });
-      setState(() {
         _isProcessing = true;
       });
       showDialog(
@@ -64,13 +62,13 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
           },
         ),
       );
-      await scannerNotifier.getParkingGate(barcode.rawValue!);
-
+      final resGate = await scannerNotifier.getParkingGate(barcode.rawValue!);
+      await DurationService.createDurationDoc(resGate.id!, resGate.price);
       setState(() {
         _isProcessing = false;
       });
       if (context.mounted) {
-        context.push(ParkingScreen.routePath);
+        context.pushReplacement(ParkingScreen.routePath);
       }
     } catch (e) {
       ScaffoldMessenger.of(context)
@@ -101,13 +99,11 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                 startDelay: true,
                 onDetect: (capture) {
                   if (!_isScanned) {
+                    _isScanned = true;
                     Barcode barcode = capture.barcodes.first;
                     getBarcode(barcode);
                     return;
                   }
-                  setState(() {
-                    _isScanned = false;
-                  });
                 },
               ),
             ),

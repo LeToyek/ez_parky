@@ -13,13 +13,22 @@ class ScannerNotifier extends StateNotifier<AsyncValue<ParkingGate>> {
     try {
       const AsyncValue.loading();
       final parkingGate = await ParkingGateService.getParkingGate(id);
-      Hive.box(boxName)
-          .put(ParkingGateService.sensorBoxName, parkingGate.sensorID);
+      Hive.box(boxName).put(ParkingGateService.gateBoxName, parkingGate.id);
       state = AsyncValue.data(parkingGate);
       parkingGateData = parkingGate;
       return parkingGate;
     } on FirebaseException {
       rethrow;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<String> getGateIDFromLocal() async {
+    try {
+      final gateID = Hive.box(boxName).get(ParkingGateService.gateBoxName);
+
+      return gateID;
     } catch (e) {
       rethrow;
     }
