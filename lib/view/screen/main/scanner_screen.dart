@@ -16,6 +16,8 @@ class ScannerScreen extends ConsumerStatefulWidget {
 
 class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   late MobileScannerController controller;
+  late bool _isScanned;
+  late bool _isProcessing;
 
   @override
   void initState() {
@@ -24,11 +26,14 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       detectionSpeed: DetectionSpeed.noDuplicates,
       facing: CameraFacing.back,
     );
+    _isScanned = false;
+    _isProcessing = false;
   }
 
   @override
   void dispose() {
     super.dispose();
+    _isScanned = false;
     controller.dispose();
   }
 
@@ -36,7 +41,34 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     final scannerNotifier = ref.read(scannerProvider.notifier);
 
     try {
+      setState(() {
+        _isScanned = true;
+      });
+      setState(() {
+        _isProcessing = true;
+      });
+      showDialog(
+        context: context,
+        builder: (context) => StatefulBuilder(
+          builder: (context, setState) {
+            return _isProcessing
+                ? const AlertDialog(
+                    // title: const Text("Parkir"),
+                    elevation: 0,
+                    backgroundColor: Colors.transparent,
+                    content: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : Container();
+          },
+        ),
+      );
       await scannerNotifier.getParkingGate(barcode.rawValue!);
+
+      setState(() {
+        _isProcessing = false;
+      });
       if (context.mounted) {
         context.push(ParkingScreen.routePath);
       }
@@ -68,8 +100,14 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                 },
                 startDelay: true,
                 onDetect: (capture) {
-                  Barcode barcode = capture.barcodes.first;
-                  getBarcode(barcode);
+                  if (!_isScanned) {
+                    Barcode barcode = capture.barcodes.first;
+                    getBarcode(barcode);
+                    return;
+                  }
+                  setState(() {
+                    _isScanned = false;
+                  });
                 },
               ),
             ),

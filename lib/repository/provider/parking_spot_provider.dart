@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:ez_parky/constants.dart';
-import 'package:ez_parky/services/parking_gate.dart';
+import 'package:ez_parky/services/parking_gate_service.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';

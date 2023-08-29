@@ -1,8 +1,10 @@
 import 'package:ez_parky/repository/provider/parking_spot_provider.dart';
 import 'package:ez_parky/repository/provider/scanner_provider.dart';
 import 'package:ez_parky/utils/formatter.dart';
+import 'package:ez_parky/view/screen/parking/checkout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class ParkingScreen extends ConsumerStatefulWidget {
   const ParkingScreen({Key? key}) : super(key: key);
@@ -137,7 +139,9 @@ class _ParkingScreenState extends ConsumerState<ParkingScreen> {
             padding: const EdgeInsets.all(16),
             width: double.infinity, // To fill the entire width
             child: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                context.push(CheckoutScreen.routePath);
+              },
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
