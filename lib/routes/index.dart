@@ -1,4 +1,6 @@
 import 'package:ez_parky/view/screen/index.dart';
+import 'package:ez_parky/view/screen/parking/checkout_screen.dart';
+import 'package:ez_parky/view/screen/parking/invoice_screen.dart';
 import 'package:ez_parky/view/screen/parking/parking_screen.dart';
 import 'package:ez_parky/view/screen/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -74,6 +76,14 @@ final _appRoutes = GoRouter(
           path: ParkingScreen.routePath,
           name: ParkingScreen.routeName,
           builder: (context, state) => const ParkingScreen()),
+      GoRoute(
+          path: CheckoutScreen.routePath,
+          name: CheckoutScreen.routeName,
+          builder: (context, state) => const CheckoutScreen()),
+      GoRoute(
+          path: InvoiceScreen.routePath,
+          name: InvoiceScreen.routeName,
+          builder: (context, state) => const InvoiceScreen()),
     ]);
 
 final appRouteProvider = Provider((ref) => _appRoutes);
