@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ParkingGate {
+  String? id;
   final String location;
   final int price;
   final int capacity;
