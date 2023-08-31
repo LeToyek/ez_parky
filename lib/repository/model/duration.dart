@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DurationModel {
   String? id;
-  final String end;
+  String end;
   final String start;
-  final int price;
+  int price;
 
   DurationModel({
     required this.end,

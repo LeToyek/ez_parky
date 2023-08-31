@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ez_parky/constants.dart';
 import 'package:ez_parky/repository/model/duration.dart';
+import 'package:ez_parky/repository/model/parking_gate.dart';
 import 'package:ez_parky/services/parking_gate_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -19,7 +20,7 @@ class DurationService {
       final res =
           await getDuartionServiceCollectionRef(id).doc(durationID).get();
       final data = DurationModel.fromJson(res);
-      data.id = id;
+      data.id = durationID;
 
       return data;
     } catch (e) {
@@ -56,11 +57,24 @@ class DurationService {
     }
   }
 
-  static int calculateHour(String time) {
-    final timeStart = DateTime.parse(time);
-    final timeNow = DateTime.now();
+  static Future<void> setFinalResponses(ParkingGate gate, int price) async {
+    try {
+      print("gate.id := ${gate.id} | gate.duration.id := ${gate.duration!.id}");
+      final res =
+          getDuartionServiceCollectionRef(gate.id!).doc(gate.duration!.id);
+      final updated =
+          await res.update({'end': DateTime.now().toString(), 'price': price});
+    } catch (e) {
+      rethrow;
+    }
+  }
 
-    Duration difference = timeNow.difference(timeStart);
+  static int calculateHour({required time, String? comparator}) {
+    final timeStart = DateTime.parse(time);
+    final realComparator =
+        comparator == null ? DateTime.now() : DateTime.parse(comparator);
+
+    Duration difference = realComparator.difference(timeStart);
 
     int hour = difference.inHours;
     if (hour == 0) {
@@ -68,5 +82,12 @@ class DurationService {
     }
 
     return hour;
+  }
+
+  static Future<void> clearDurationCache() async {
+    final box = await Hive.openBox(boxName);
+    await box.put(durationBox, null);
+    final res = await box.get(durationBox);
+    print("duration box := $res");
   }
 }

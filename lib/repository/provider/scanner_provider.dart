@@ -44,6 +44,13 @@ class ScannerNotifier extends StateNotifier<AsyncValue<ParkingGate>> {
     }
   }
 
+  Future<void> checkOutPayment(int price) async {
+    await DurationService.clearDurationCache();
+    await DurationService.setFinalResponses(state.value!, price);
+    state.value!.duration!.end = DateTime.now().toString();
+    state.value!.duration!.price = price;
+  }
+
   Future<String> getGateIDFromLocal() async {
     try {
       final gateID = Hive.box(boxName).get(ParkingGateService.gateBoxName);
