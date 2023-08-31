@@ -1,7 +1,10 @@
 import 'package:ez_parky/repository/provider/scanner_provider.dart';
+import 'package:ez_parky/services/duration_service.dart';
 import 'package:ez_parky/utils/formatter.dart';
+import 'package:ez_parky/view/screen/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class InvoiceScreen extends ConsumerWidget {
   const InvoiceScreen({super.key});
@@ -22,21 +25,65 @@ class InvoiceScreen extends ConsumerWidget {
         backgroundColor: colorTheme.primary,
       ),
       body: parkingData.when(data: (data) {
+        final detailParkirData = [
+          {"title": "Lokasi", "content": data.location},
+          {
+            "title": "Harga per jam",
+            "content": "Rp ${formatMoney(data.price)}"
+          },
+          {"title": 'Tanggal Parkir', "content": data.duration!.start},
+          {
+            "title": "Masuk Parkir",
+            "content": formatUniversalTime(data.duration!.start)
+          },
+          {
+            "title": "Keluar Parkir",
+            "content": formatUniversalTime(data.duration!.end)
+          },
+          {
+            "title": "Total Waktu Parkir",
+            "content":
+                "${DurationService.calculateHour(time: data.duration!.start, comparator: data.duration!.end)} jam"
+          },
+        ];
+        final paymentDetailData = [
+          {"title": "Metode Pembayaran", "content": "Parky Cash"},
+          {
+            "title": "Total Pembayaran",
+            "content": "Rp ${formatMoney(data.duration!.price)}"
+          },
+        ];
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Text(
-                'Bukti Pembayaran',
-                style: textTheme.headlineMedium,
+              Text("Pembayaran Berhasil",
+                  style: textTheme.headlineSmall!.apply(fontWeightDelta: 2)),
+              const SizedBox(
+                height: 16,
+              ),
+              Icon(
+                Icons.check_circle,
+                color: Colors.green.shade200,
+                size: 72,
               ),
               const SizedBox(
                 height: 16,
               ),
               _buildInvoiceSubTitle(textTheme, "Detail Parkir"),
-              _buildInvoiceDetail(textTheme, 'Lokasi', data.location),
-              _buildInvoiceDetail(
-                  textTheme, 'Harga per jam', "Rp ${formatMoney(data.price)}"),
+              ...detailParkirData.map((e) =>
+                  _buildInvoiceDetail(textTheme, e['title']!, e['content']!)),
+              const SizedBox(
+                height: 16,
+              ),
+              _buildInvoiceSubTitle(textTheme, "Pembayaran"),
+              ...paymentDetailData.map((e) =>
+                  _buildInvoiceDetail(textTheme, e['title']!, e['content']!)),
+              const SizedBox(
+                height: 16,
+              ),
+              Text("Terima kasih telah mempercayakan parkir kepada kami",
+                  style: textTheme.bodyLarge!.apply(color: Colors.black38)),
             ],
           ),
         );
@@ -55,7 +102,7 @@ class InvoiceScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             width: double.infinity, // To fill the entire width
             child: GestureDetector(
-              onTap: () {},
+              onTap: () => context.go(IndexScreen.routePath),
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
