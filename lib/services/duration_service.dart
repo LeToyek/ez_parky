@@ -14,15 +14,16 @@ class DurationService {
 
   static Future<DurationModel> getDuration(String id) async {
     try {
-      final durationID = Hive.box(boxName).get(durationBox);
+      final box = await Hive.openBox(boxName);
+      final durationID = await box.get(durationBox);
       final res =
           await getDuartionServiceCollectionRef(id).doc(durationID).get();
       final data = DurationModel.fromJson(res);
       data.id = id;
-      // final box = await Hive.openBox(ParkingGateService.sensorBoxName);
 
       return data;
     } catch (e) {
+      print("error $e");
       rethrow;
     }
   }
@@ -35,7 +36,8 @@ class DurationService {
       final res =
           await getDuartionServiceCollectionRef(id).add(durationModel.toJson());
 
-      // final box = await Hive.openBox(ParkingGateService.sensorBoxName);
+      final box = await Hive.openBox(boxName);
+      box.put(durationBox, res.id);
 
       return res;
     } catch (e) {
@@ -52,5 +54,19 @@ class DurationService {
     } catch (e) {
       rethrow;
     }
+  }
+
+  static int calculateHour(String time) {
+    final timeStart = DateTime.parse(time);
+    final timeNow = DateTime.now();
+
+    Duration difference = timeNow.difference(timeStart);
+
+    int hour = difference.inHours;
+    if (hour == 0) {
+      hour = 1;
+    }
+
+    return hour;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ez_parky/repository/model/duration.dart';
 
 class ParkingGate {
   String? id;
@@ -6,13 +7,14 @@ class ParkingGate {
   final int price;
   final int capacity;
   final String sensorID;
+  DurationModel? duration;
 
-  ParkingGate({
-    required this.location,
-    required this.price,
-    required this.capacity,
-    required this.sensorID,
-  });
+  ParkingGate(
+      {required this.location,
+      required this.price,
+      required this.capacity,
+      required this.sensorID,
+      this.duration});
 
   factory ParkingGate.fromJson(DocumentSnapshot json) {
     return ParkingGate(

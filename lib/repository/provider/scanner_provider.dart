@@ -1,5 +1,6 @@
 import 'package:ez_parky/constants.dart';
 import 'package:ez_parky/repository/model/parking_gate.dart';
+import 'package:ez_parky/services/duration_service.dart';
 import 'package:ez_parky/services/parking_gate_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +21,25 @@ class ScannerNotifier extends StateNotifier<AsyncValue<ParkingGate>> {
     } on FirebaseException {
       rethrow;
     } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<ParkingGate> getParkingGateForPayment(String id) async {
+    try {
+      state = const AsyncValue.loading();
+      final parkingGate = await ParkingGateService.getParkingGate(id);
+      final duration = await DurationService.getDuration(id);
+      parkingGate.duration = duration;
+
+      state = AsyncValue.data(parkingGate);
+
+      return parkingGate;
+    } on FirebaseException catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+      rethrow;
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
       rethrow;
     }
   }
