@@ -3,11 +3,17 @@ import 'package:ez_parky/constants.dart';
 import 'package:ez_parky/repository/model/duration.dart';
 import 'package:ez_parky/repository/model/parking_gate.dart';
 import 'package:ez_parky/services/parking_gate_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class DurationService {
   static CollectionReference getDuartionServiceCollectionRef(String id) {
-    return ParkingGateService.parkingGate.doc(id).collection('responses');
+    final userID = FirebaseAuth.instance.currentUser;
+    return ParkingGateService.parkingGate
+        .doc(id)
+        .collection('responses')
+        .doc(userID!.uid)
+        .collection('durations');
   }
 
   static const String durationBox = 'duration_id';
