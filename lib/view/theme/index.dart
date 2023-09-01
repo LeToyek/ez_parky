@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const int _primaryColor = 0xFF819FC9; // New primary color: Blue 819FC9
+const int _primaryColor = 0xFF2E4DF1; // New primary color: Blue 2E4DF1
 const MaterialColor primarySwatch = MaterialColor(_primaryColor, <int, Color>{
-  50: Color(0xFFE5EBF3),
-  100: Color(0xFFBACBE0),
-  200: Color(0xFF8E9DB2),
-  300: Color(0xFF627F84),
-  400: Color(0xFF416586), // New primary color for 400
-  500: Color(_primaryColor), // New primary color for 500
-  600: Color(0xFF2D5070),
-  700: Color(0xFF24415E),
-  800: Color(0xFF1B314C),
-  900: Color(0xFF12213A),
+  50: Color(0xFFE3E8FD),
+  100: Color(0xFFB8C4FA),
+  200: Color(0xFF8D9FF7),
+  300: Color(0xFF627AF4),
+  400: Color(0xFF3A55F1),
+  500: Color(_primaryColor),
+  600: Color(0xFF273CD0),
+  700: Color(0xFF1D2EAB),
+  800: Color(0xFF132084),
+  900: Color(0xFF090C5C),
 });
 
 const int _textColor = 0xFF64748B;
