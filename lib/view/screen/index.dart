@@ -1,4 +1,6 @@
 import 'package:ez_parky/repository/provider/bottom_nav_bar_provider.dart';
+import 'package:ez_parky/view/screen/main/history_screen.dart';
+import 'package:ez_parky/view/screen/main/home_screen.dart';
 import 'package:ez_parky/view/screen/main/scanner_screen.dart';
 import 'package:ez_parky/view/screen/main/setting_screen.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
@@ -85,10 +87,14 @@ class IndexScreen extends ConsumerWidget {
   Widget _buildPageContent(int index) {
     switch (index) {
       case 0:
-        return const ScannerScreen();
+        return const HomeScreen();
       case 1:
-        return const SettingScreen();
+        return const HistoryScreen();
       case 2:
+        return const ScannerScreen();
+      case 3:
+        return const SettingScreen();
+      case 4:
         return const ProfileScreen();
       default:
         return Container();
