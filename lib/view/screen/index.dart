@@ -6,6 +6,7 @@ import 'package:ez_parky/view/screen/main/setting_screen.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class IndexScreen extends ConsumerWidget {
   const IndexScreen({super.key});
@@ -95,7 +96,13 @@ class IndexScreen extends ConsumerWidget {
       case 3:
         return const SettingScreen();
       case 4:
-        return const ProfileScreen();
+        return ProfileScreen(
+          actions: [
+            SignedOutAction((context) {
+              context.pushReplacement('/sign-in');
+            })
+          ],
+        );
       default:
         return Container();
     }
