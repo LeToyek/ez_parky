@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class WalletService {
   final currentUser = FirebaseAuth.instance.currentUser;
-  Future<void> getWallet() async {
-    // CollectionReference walletRef = FirebaseFirestore.instance.collection(collectionPath)
-  }
+  final walletRef = FirebaseFirestore.instance.collection('user');
+  Future<void> getWallet() async {}
 }

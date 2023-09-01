@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ez_parky/repository/model/user_model.dart';
+import 'package:ez_parky/repository/model/wallet_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserService {
@@ -9,10 +10,23 @@ class UserService {
     CollectionReference userRef =
         FirebaseFirestore.instance.collection(userCollection);
 
-    userRef.doc(currentUser!.uid).set(UserModel(
-            email: currentUser!.email!,
-            name: currentUser!.displayName!,
-            imageUrl: currentUser!.photoURL!)
-        .toJson());
+    try {
+      final user = await userRef.doc(currentUser!.uid).get();
+      print('user ${user.exists}');
+      final timeNow = DateTime.now().toString();
+      if (!user.exists) {
+        userRef.doc(currentUser!.uid).set(UserModel(
+                email: currentUser!.email!,
+                name: currentUser!.displayName!,
+                imageUrl: currentUser!.photoURL!,
+                wallet: WalletModel(
+                    value: 0, createdAt: timeNow, updateAt: timeNow),
+                createdAt: timeNow,
+                updatedAt: timeNow)
+            .toMap());
+      }
+    } catch (e) {
+      print("error : $e");
+    }
   }
 }

@@ -1,21 +1,63 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 
 class WalletModel {
-  int value;
-  String createdAt;
-  String updateAt;
+  final int value;
+  String? createdAt;
+  String? updateAt;
 
-  WalletModel(
-      {required this.value, required this.createdAt, required this.updateAt});
+  WalletModel({
+    required this.value,
+    this.createdAt,
+    this.updateAt,
+  });
 
-  factory WalletModel.fromJson(DocumentSnapshot<Object?> json) {
+  WalletModel copyWith({
+    int? value,
+    String? createdAt,
+    String? updateAt,
+  }) {
     return WalletModel(
-        value: json['value'],
-        createdAt: json['created_at'],
-        updateAt: json['updated_at']);
+      value: this.value,
+      createdAt: createdAt ?? this.createdAt,
+      updateAt: updateAt ?? this.updateAt,
+    );
   }
 
-  Map<String, dynamic> toJson() {
-    return {'value': value, 'created_at': createdAt, 'updated_at': updateAt};
+  Map<String, dynamic> toMap() {
+    return {
+      'value': value,
+      'createdAt': createdAt,
+      'updateAt': updateAt,
+    };
   }
+
+  factory WalletModel.fromMap(Map<String, dynamic> map) {
+    return WalletModel(
+      value: map['value']?.toInt() ?? 0,
+      createdAt: map['createdAt'] ?? '',
+      updateAt: map['updateAt'] ?? '',
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory WalletModel.fromJson(String source) =>
+      WalletModel.fromMap(json.decode(source));
+
+  @override
+  String toString() =>
+      'WalletModel(value: $value, createdAt: $createdAt, updateAt: $updateAt)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is WalletModel &&
+        other.value == value &&
+        other.createdAt == createdAt &&
+        other.updateAt == updateAt;
+  }
+
+  @override
+  int get hashCode => value.hashCode ^ createdAt.hashCode ^ updateAt.hashCode;
 }

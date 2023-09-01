@@ -1,3 +1,4 @@
+import 'package:ez_parky/repository/provider/user_provider.dart';
 import 'package:ez_parky/services/user_service.dart';
 import 'package:ez_parky/view/screen/index.dart';
 import 'package:ez_parky/view/screen/parking/checkout_screen.dart';
@@ -30,67 +31,71 @@ final _appRoutes =
     path: '/sign-in',
     builder: (context, state) => StatefulBuilder(builder: (context, setState) {
       bool isProcessing = false;
-      return SignInScreen(
-        actions: [
-          AuthStateChangeAction<SignedIn>((context, state) async {
-            setState(() {
-              isProcessing = true;
-            });
-            try {
-              await UserService.initUserData();
-              showDialog(
-                context: context,
-                builder: (context) => StatefulBuilder(
-                  builder: (context, setState) {
-                    return isProcessing
-                        ? const AlertDialog(
-                            // title: const Text("Parkir"),
-                            elevation: 0,
-                            backgroundColor: Colors.transparent,
-                            content: Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        : Container();
-                  },
+      return Consumer(builder: (context, ref, _) {
+        final userNotifier = ref.read(userProvider.notifier);
+        return SignInScreen(
+          actions: [
+            AuthStateChangeAction<SignedIn>((context, state) async {
+              setState(() {
+                isProcessing = true;
+              });
+              try {
+                await UserService.initUserData();
+                showDialog(
+                  context: context,
+                  builder: (context) => StatefulBuilder(
+                    builder: (context, setState) {
+                      return isProcessing
+                          ? const AlertDialog(
+                              // title: const Text("Parkir"),
+                              elevation: 0,
+                              backgroundColor: Colors.transparent,
+                              content: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          : Container();
+                    },
+                  ),
+                );
+                userNotifier.initUserState();
+                setState(() => isProcessing = false);
+                if (context.mounted) {
+                  context.go(IndexScreen.routePath);
+                }
+              } catch (e) {}
+            }),
+          ],
+          styles: const {
+            EmailFormStyle(signInButtonVariant: ButtonVariant.filled),
+          },
+          headerBuilder: (context, constraints, shrinkOffset) => Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+            child: const Center(
+              child: Text(
+                'Logo',
+                style: TextStyle(
+                  fontSize: 40,
+                  color: Colors.black,
                 ),
-              );
-              setState(() => isProcessing = false);
-              if (context.mounted) {
-                context.go(IndexScreen.routePath);
-              }
-            } catch (e) {}
-          }),
-        ],
-        styles: const {
-          EmailFormStyle(signInButtonVariant: ButtonVariant.filled),
-        },
-        headerBuilder: (context, constraints, shrinkOffset) => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-          child: const Center(
-            child: Text(
-              'Logo',
-              style: TextStyle(
-                fontSize: 40,
-                color: Colors.black,
               ),
             ),
           ),
-        ),
-        footerBuilder: (context, action) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Text(
-                action == AuthAction.signIn
-                    ? 'By signing in, you agree to our terms and conditions.'
-                    : 'By registering, you agree to our terms and conditions.',
-                style: const TextStyle(color: Colors.grey),
+          footerBuilder: (context, action) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Text(
+                  action == AuthAction.signIn
+                      ? 'By signing in, you agree to our terms and conditions.'
+                      : 'By registering, you agree to our terms and conditions.',
+                  style: const TextStyle(color: Colors.grey),
+                ),
               ),
-            ),
-          );
-        },
-      );
+            );
+          },
+        );
+      });
     }),
   ),
   GoRoute(

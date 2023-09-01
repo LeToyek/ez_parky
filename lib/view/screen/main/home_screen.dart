@@ -1,3 +1,6 @@
+import 'package:ez_parky/repository/model/user_model.dart';
+import 'package:ez_parky/repository/provider/user_provider.dart';
+import 'package:ez_parky/utils/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,24 +11,40 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final userRef = ref.watch(userProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home"),
       ),
       backgroundColor: colorScheme.background,
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [],
-        ),
-      ),
+      body: userRef.when(loading: () {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }, error: (error, stackTrace) {
+        return Center(
+          child: Text("$error"),
+        );
+      }, data: (data) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildWallet(
+                  textTheme: textTheme,
+                  colorScheme: colorScheme,
+                  userData: data)
+            ],
+          ),
+        );
+      }),
     );
   }
 
   Widget _buildWallet(
       {required TextTheme textTheme,
       required ColorScheme colorScheme,
-      required}) {
+      required UserModel userData}) {
     return Container(
       height: 200,
       padding: const EdgeInsets.all(16),
@@ -44,7 +63,7 @@ class HomeScreen extends ConsumerWidget {
             height: 16,
           ),
           Text(
-            "Rp 1.000.000",
+            "Rp ${formatMoney(userData.wallet!.value)}",
             style: textTheme.labelLarge!.apply(
                 fontSizeDelta: 16, fontWeightDelta: 2, color: Colors.white),
           ),
