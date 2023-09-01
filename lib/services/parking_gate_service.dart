@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ez_parky/repository/model/parking_gate.dart';
+import 'package:ez_parky/repository/model/parking_gate_model.dart';
 
 class ParkingGateService {
   static CollectionReference parkingGate =

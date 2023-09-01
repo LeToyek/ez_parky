@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ez_parky/constants.dart';
-import 'package:ez_parky/repository/model/duration.dart';
-import 'package:ez_parky/repository/model/parking_gate.dart';
+import 'package:ez_parky/repository/model/duration_model.dart';
+import 'package:ez_parky/repository/model/parking_gate_model.dart';
 import 'package:ez_parky/services/parking_gate_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive_flutter/hive_flutter.dart';

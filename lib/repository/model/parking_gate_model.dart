@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ez_parky/repository/model/duration.dart';
+import 'package:ez_parky/repository/model/duration_model.dart';
 
 class ParkingGate {
   String? id;

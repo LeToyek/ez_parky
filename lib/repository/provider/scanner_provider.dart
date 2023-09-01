@@ -1,5 +1,5 @@
 import 'package:ez_parky/constants.dart';
-import 'package:ez_parky/repository/model/parking_gate.dart';
+import 'package:ez_parky/repository/model/parking_gate_model.dart';
 import 'package:ez_parky/services/duration_service.dart';
 import 'package:ez_parky/services/parking_gate_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';

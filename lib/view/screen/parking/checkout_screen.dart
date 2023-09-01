@@ -1,5 +1,5 @@
-import 'package:ez_parky/repository/model/duration.dart';
-import 'package:ez_parky/repository/model/parking_gate.dart';
+import 'package:ez_parky/repository/model/duration_model.dart';
+import 'package:ez_parky/repository/model/parking_gate_model.dart';
 import 'package:ez_parky/repository/provider/scanner_provider.dart';
 import 'package:ez_parky/services/duration_service.dart';
 import 'package:ez_parky/utils/formatter.dart';
