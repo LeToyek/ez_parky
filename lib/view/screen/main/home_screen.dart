@@ -1,8 +1,10 @@
 import 'package:ez_parky/repository/model/user_model.dart';
 import 'package:ez_parky/repository/provider/user_provider.dart';
 import 'package:ez_parky/utils/formatter.dart';
+import 'package:ez_parky/view/screen/wallet/manager_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -31,6 +33,7 @@ class HomeScreen extends ConsumerWidget {
           child: Column(
             children: [
               _buildWallet(
+                  context: context,
                   textTheme: textTheme,
                   colorScheme: colorScheme,
                   userData: data)
@@ -42,7 +45,8 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildWallet(
-      {required TextTheme textTheme,
+      {required BuildContext context,
+      required TextTheme textTheme,
       required ColorScheme colorScheme,
       required UserModel userData}) {
     return Container(
@@ -63,7 +67,7 @@ class HomeScreen extends ConsumerWidget {
             height: 16,
           ),
           Text(
-            "Rp ${formatMoney(userData.wallet!.value)}",
+            "Rp ${formatMoney(userData.wallet.value)}",
             style: textTheme.labelLarge!.apply(
                 fontSizeDelta: 16, fontWeightDelta: 2, color: Colors.white),
           ),
@@ -72,25 +76,28 @@ class HomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(width: 1, color: Colors.white)),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.add_circle_rounded,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(
-                      width: 4,
-                    ),
-                    Text(
-                      "Top up",
-                      style: textTheme.bodyLarge!.apply(color: Colors.white),
-                    )
-                  ],
+              InkWell(
+                onTap: () => context.push(WalletManagerScreen.routePath),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(width: 1, color: Colors.white)),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.add_circle_rounded,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        "Top up",
+                        style: textTheme.bodyLarge!.apply(color: Colors.white),
+                      )
+                    ],
+                  ),
                 ),
               )
             ],

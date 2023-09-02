@@ -5,6 +5,7 @@ import 'package:ez_parky/view/screen/parking/checkout_screen.dart';
 import 'package:ez_parky/view/screen/parking/invoice_screen.dart';
 import 'package:ez_parky/view/screen/parking/parking_screen.dart';
 import 'package:ez_parky/view/screen/splash_screen.dart';
+import 'package:ez_parky/view/screen/wallet/manager_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
@@ -119,6 +120,11 @@ final _appRoutes =
       path: InvoiceScreen.routePath,
       name: InvoiceScreen.routeName,
       builder: (context, state) => const InvoiceScreen()),
+  GoRoute(
+    path: WalletManagerScreen.routePath,
+    name: WalletManagerScreen.routeName,
+    builder: (context, state) => WalletManagerScreen(),
+  )
 ]);
 
 final appRouteProvider = Provider((ref) => _appRoutes);
