@@ -206,6 +206,22 @@ class _WalletManagerScreenState extends ConsumerState<WalletManagerScreen> {
         Future.delayed(const Duration(seconds: 1))
             .then((value) => context.pop());
       }
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          icon: const Icon(Icons.warning_amber_rounded),
+          iconColor: Theme.of(context).colorScheme.error,
+          content: const Text(
+            "Masukkan nominal top up anda terlebih dahulu!",
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => context.pop(), child: const Text("Tutup"))
+          ],
+        ),
+      );
     }
   }
 }

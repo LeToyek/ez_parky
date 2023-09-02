@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ez_parky/repository/model/transaction_model.dart';
+import 'package:ez_parky/repository/model/user_model.dart';
 import 'package:ez_parky/utils/formatter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -27,8 +28,13 @@ class WalletService {
     userRef.update({"wallet.value": FieldValue.increment(inputValue)});
   }
 
-  Future<void> decreaseWalletValue(int inputValue, String message) async {
+  Future<bool> decreaseWalletValue(int inputValue, String message) async {
     final timeNow = DateTime.now().toString();
+    final userMap = await userRef.get();
+    final userWallet = UserModel.fromMap(userMap);
+    if (userWallet.wallet.value < inputValue) {
+      return false;
+    }
     userRef.collection("transactions").add(TransactionModel(
             value: inputValue,
             createdAt: timeNow,
@@ -37,5 +43,6 @@ class WalletService {
             logMessage: message)
         .toMap());
     userRef.update({"wallet.value": FieldValue.increment(inputValue * -1)});
+    return true;
   }
 }

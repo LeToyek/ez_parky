@@ -17,4 +17,13 @@ class ParkingGateService {
       rethrow;
     }
   }
+
+  static Future<void> increaseGateIncome(String id, int inputValue) async {
+    try {
+      final res = parkingGate.doc(id);
+      await res.update({"income": FieldValue.increment(inputValue)});
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

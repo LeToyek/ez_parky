@@ -1,6 +1,7 @@
 import 'package:ez_parky/repository/model/duration_model.dart';
 import 'package:ez_parky/repository/model/parking_gate_model.dart';
 import 'package:ez_parky/repository/provider/scanner_provider.dart';
+import 'package:ez_parky/repository/provider/user_provider.dart';
 import 'package:ez_parky/services/duration_service.dart';
 import 'package:ez_parky/utils/formatter.dart';
 import 'package:ez_parky/view/layouts/index.dart';
@@ -24,7 +25,7 @@ class CheckoutScreen extends ConsumerStatefulWidget {
 class CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   late MobileScannerController controller;
   late bool _isScanned;
-  bool _isProcessing = false;
+  final bool _isProcessing = false;
 
   @override
   void initState() {
@@ -67,7 +68,14 @@ class CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ),
           backgroundColor: Theme.of(context).colorScheme.surface,
           context: context,
-          builder: (context) => _buildPaymentPopUp());
+          builder: (context) => WillPopScope(
+              onWillPop: () async {
+                setState(() {
+                  _isScanned = false;
+                });
+                return true;
+              },
+              child: _buildPaymentPopUp()));
     } catch (e) {
       print("Errorr := $e");
       ScaffoldMessenger.of(context)
@@ -203,52 +211,83 @@ class CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(),
-                Expanded(
-                    child: Column(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    Icon(
+                      Icons.account_balance_wallet_rounded,
+                      color: colorScheme.primary,
+                      size: 16,
+                    ),
                     Text(
-                      "Total: ",
+                      "Ez Wallet",
                       style: Theme.of(context)
                           .textTheme
                           .labelMedium!
-                          .apply(fontWeightDelta: 2),
-                    ),
-                    Text("Rp $finalPrice")
+                          .apply(fontWeightDelta: 1),
+                    )
                   ],
-                ))
+                ),
+                Text(
+                  "Rp $finalPrice",
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .apply(fontWeightDelta: 2),
+                )
               ],
             ),
           ),
         ),
         GestureDetector(
           onTap: () async {
-            setState(() {
-              _isProcessing = true;
-            });
+            final userRef = ref.read(userProvider.notifier);
             showDialog(
               context: context,
               builder: (context) => StatefulBuilder(
                 builder: (context, setState) {
-                  return _isProcessing
-                      ? const AlertDialog(
-                          // title: const Text("Parkir"),
-                          elevation: 0,
-                          backgroundColor: Colors.transparent,
-                          content: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        )
-                      : Container();
+                  return const AlertDialog(
+                    // title: const Text("Parkir"),
+                    elevation: 0,
+                    backgroundColor: Colors.transparent,
+                    content: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
                 },
               ),
             );
-            await scannerNotifier.checkOutPayment(res);
-            setState(() {
-              _isProcessing = false;
-            });
-            if (context.mounted) {
-              context.go(InvoiceScreen.routePath);
+            final resCheckOut = await scannerNotifier.checkOutPayment(res);
+            if (resCheckOut) {
+              await userRef.initUserState();
+              if (context.mounted) {
+                setState(() {
+                  _isScanned = false;
+                });
+                context.go(InvoiceScreen.routePath);
+              }
+            } else {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  icon: const Icon(Icons.warning_amber_rounded),
+                  iconColor: Theme.of(context).colorScheme.error,
+                  content: const Text(
+                    "Saldo anda tidak cukup, silahkan ganti metode pembayaran atau bayar dengan uang tunai pada petugas",
+                    textAlign: TextAlign.center,
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _isScanned = false;
+                          });
+                          context.pop();
+                        },
+                        child: const Text("Tutup"))
+                  ],
+                ),
+              );
             }
           },
           child: Container(

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ez_parky/constants.dart';
 import 'package:ez_parky/repository/model/parking_gate_model.dart';
 import 'package:ez_parky/services/duration_service.dart';
@@ -47,14 +48,19 @@ class ScannerNotifier extends StateNotifier<AsyncValue<ParkingGate>> {
     }
   }
 
-  Future<void> checkOutPayment(int price) async {
+  Future<bool> checkOutPayment(int price) async {
     try {
-      await DurationService.clearDurationCache();
-      await DurationService.setFinalResponses(state.value!, price);
-      await _walletService.decreaseWalletValue(price,
+      final res = await _walletService.decreaseWalletValue(price,
           "Checkout parkir ${parkingGateData.location} sebesar Rp ${formatMoney(price)}");
-      state.value!.duration!.end = DateTime.now().toString();
-      state.value!.duration!.price = price;
+      if (res) {
+        await DurationService.clearDurationCache();
+        await DurationService.setFinalResponses(state.value!, price);
+        await ParkingGateService.increaseGateIncome(state.value!.id!, price);
+        state.value!.duration!.end = DateTime.now().toString();
+        state.value!.duration!.price = price;
+        return true;
+      }
+      return false;
     } catch (e) {
       rethrow;
     }
