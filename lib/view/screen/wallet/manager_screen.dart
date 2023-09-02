@@ -1,7 +1,10 @@
+import 'package:ez_parky/repository/provider/user_provider.dart';
+import 'package:ez_parky/services/wallet_service.dart';
 import 'package:ez_parky/utils/formatter.dart';
 import 'package:ez_parky/view/widgets/ez_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class WalletManagerScreen extends ConsumerStatefulWidget {
   static const routePath = "/wallet-manager";
@@ -23,6 +26,7 @@ class WalletManagerScreen extends ConsumerStatefulWidget {
 
 class _WalletManagerScreenState extends ConsumerState<WalletManagerScreen> {
   int selectedTopUpValue = 0;
+  final bool _isProcessing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -46,15 +50,15 @@ class _WalletManagerScreenState extends ConsumerState<WalletManagerScreen> {
         backgroundColor: colorScheme.background,
         body: TabBarView(
           children: [
-            _quickPage(textTheme, colorScheme),
-            _otherPage(textTheme, colorScheme)
+            _buildQuickPage(textTheme, colorScheme),
+            _buildOtherPage(textTheme, colorScheme)
           ],
         ),
       ),
     );
   }
 
-  Widget _quickPage(TextTheme textTheme, ColorScheme colorScheme) {
+  Widget _buildQuickPage(TextTheme textTheme, ColorScheme colorScheme) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -89,32 +93,10 @@ class _WalletManagerScreenState extends ConsumerState<WalletManagerScreen> {
                             final iconCard = widget.nominalValue[index]['icon'];
                             final topUpValue =
                                 widget.nominalValue[index]['value'];
-                            final value = formatMoney(topUpValue);
-                            return EzCard(
-                                onTap: () => setState(() {
-                                      selectedTopUpValue = topUpValue;
-                                    }),
-                                border: Border.all(
-                                    style: BorderStyle.solid,
-                                    width: 4,
-                                    color: Colors.grey.shade200),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Image.asset(
-                                      "$iconCard.png",
-                                      height: 54,
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      "Rp $value",
-                                      style: textTheme.bodyMedium!
-                                          .apply(fontWeightDelta: 2),
-                                    ),
-                                  ],
-                                ));
+                            return _buildMoneyCard(
+                                textTheme: textTheme,
+                                iconCard: iconCard,
+                                topUpValue: topUpValue);
                           })
                         ],
                       ))
@@ -125,29 +107,33 @@ class _WalletManagerScreenState extends ConsumerState<WalletManagerScreen> {
           const Spacer(),
           Container(
             padding: const EdgeInsets.all(12),
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: colorScheme.primary),
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Bayar",
-                    style: textTheme.bodyLarge!.apply(
-                        fontSizeDelta: 4,
-                        fontWeightDelta: 3,
-                        color: Colors.white),
-                  ),
-                  Text(
-                    "Rp ${formatMoney(selectedTopUpValue)}",
-                    style: textTheme.bodyLarge!.apply(
-                        fontSizeDelta: 4,
-                        fontWeightDelta: 3,
-                        color: Colors.white),
-                  )
-                ],
+            child: GestureDetector(
+              onTap: () =>
+                  _onPayTopUp(context: context, value: selectedTopUpValue),
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: colorScheme.primary),
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Bayar",
+                      style: textTheme.bodyLarge!.apply(
+                          fontSizeDelta: 4,
+                          fontWeightDelta: 3,
+                          color: Colors.white),
+                    ),
+                    Text(
+                      "Rp ${formatMoney(selectedTopUpValue)}",
+                      style: textTheme.bodyLarge!.apply(
+                          fontSizeDelta: 4,
+                          fontWeightDelta: 3,
+                          color: Colors.white),
+                    )
+                  ],
+                ),
               ),
             ),
           )
@@ -156,7 +142,36 @@ class _WalletManagerScreenState extends ConsumerState<WalletManagerScreen> {
     );
   }
 
-  Widget _otherPage(TextTheme textTheme, ColorScheme colorScheme) {
+  Widget _buildMoneyCard(
+      {required TextTheme textTheme,
+      required String iconCard,
+      required int topUpValue}) {
+    final value = formatMoney(topUpValue);
+    return EzCard(
+        onTap: () => setState(() {
+              selectedTopUpValue = topUpValue;
+            }),
+        border: Border.all(
+            style: BorderStyle.solid, width: 4, color: Colors.grey.shade200),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              "$iconCard.png",
+              height: 54,
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            Text(
+              "Rp $value",
+              style: textTheme.bodyMedium!.apply(fontWeightDelta: 2),
+            ),
+          ],
+        ));
+  }
+
+  Widget _buildOtherPage(TextTheme textTheme, ColorScheme colorScheme) {
     return Column(
       children: [
         EzCard(
@@ -164,5 +179,33 @@ class _WalletManagerScreenState extends ConsumerState<WalletManagerScreen> {
         )
       ],
     );
+  }
+
+  void _onPayTopUp({required BuildContext context, required int value}) async {
+    final userRef = ref.read(userProvider.notifier);
+    if (value != 0) {
+      WalletService walletService = WalletService();
+
+      await walletService.increaseWalletValue(value);
+      await userRef.initUserState();
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const AlertDialog(
+            // title: const Text("Parkir"),
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            content: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        },
+      );
+
+      if (context.mounted) {
+        Future.delayed(const Duration(seconds: 1))
+            .then((value) => context.pop());
+      }
+    }
   }
 }

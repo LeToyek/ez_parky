@@ -24,7 +24,7 @@ class WalletService {
             logType: '[ADD]',
             logMessage: 'Menambah saldo sebanyak Rp ${formatMoney(inputValue)}')
         .toMap());
-    userRef.set({"wallet.value": FieldValue.increment(inputValue)});
+    userRef.update({"wallet.value": FieldValue.increment(inputValue)});
   }
 
   Future<void> decreaseWalletValue(int inputValue, String message) async {
@@ -36,6 +36,6 @@ class WalletService {
             logType: '[SUBSTRACT]',
             logMessage: message)
         .toMap());
-    userRef.set({"wallet.value": FieldValue.increment(inputValue * -1)});
+    userRef.update({"wallet.value": FieldValue.increment(inputValue * -1)});
   }
 }
