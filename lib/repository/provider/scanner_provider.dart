@@ -2,12 +2,15 @@ import 'package:ez_parky/constants.dart';
 import 'package:ez_parky/repository/model/parking_gate_model.dart';
 import 'package:ez_parky/services/duration_service.dart';
 import 'package:ez_parky/services/parking_gate_service.dart';
+import 'package:ez_parky/services/wallet_service.dart';
+import 'package:ez_parky/utils/formatter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class ScannerNotifier extends StateNotifier<AsyncValue<ParkingGate>> {
   late ParkingGate parkingGateData;
+  final WalletService _walletService = WalletService();
   ScannerNotifier() : super(const AsyncValue.loading());
 
   Future<ParkingGate> getParkingGate(String id) async {
@@ -45,10 +48,16 @@ class ScannerNotifier extends StateNotifier<AsyncValue<ParkingGate>> {
   }
 
   Future<void> checkOutPayment(int price) async {
-    await DurationService.clearDurationCache();
-    await DurationService.setFinalResponses(state.value!, price);
-    state.value!.duration!.end = DateTime.now().toString();
-    state.value!.duration!.price = price;
+    try {
+      await DurationService.clearDurationCache();
+      await DurationService.setFinalResponses(state.value!, price);
+      await _walletService.decreaseWalletValue(price,
+          "Checkout parkir ${parkingGateData.location} sebesar Rp ${formatMoney(price)}");
+      state.value!.duration!.end = DateTime.now().toString();
+      state.value!.duration!.price = price;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<String> getGateIDFromLocal() async {
