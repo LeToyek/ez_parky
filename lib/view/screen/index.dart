@@ -20,6 +20,7 @@ class IndexScreen extends ConsumerWidget {
     return Scaffold(
         body: _buildPageContent(navigationState),
         floatingActionButton: FloatingActionButton(
+            heroTag: 'fb_main',
             child: const Icon(Icons.qr_code_2_outlined),
             onPressed: () => {navigationNotifier.setValueToDB(2)}),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
