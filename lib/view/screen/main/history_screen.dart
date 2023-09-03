@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -15,7 +17,53 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   late GoogleMapController mapController;
 
   LatLng? _center = const LatLng(-7.8675462, 112.680094);
+  List<LatLng> polylineCoordinates = [];
   bool _isMapCreated = false;
+
+  LatLng destination = const LatLng(-7.950982275096204, 112.6397738845435);
+
+  BitmapDescriptor sourceIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor destinationIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor currentLocationIcon = BitmapDescriptor.defaultMarker;
+  void setCustomMarkerIcon() {
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration.empty, "lib/assets/pin_destination.png")
+        .then(
+      (icon) {
+        destinationIcon = icon;
+      },
+    );
+    BitmapDescriptor.fromAssetImage(
+            const ImageConfiguration(size: Size(12, 12)), "lib/assets/logo.png")
+        .then(
+      (icon) {
+        currentLocationIcon = icon;
+      },
+    );
+  }
+
+  void getPolyPoints() async {
+    PolylinePoints polylinePoints = PolylinePoints();
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      dotenv.env['GOOGLE_MAP_API_KEY']!,
+      const PointLatLng(-7.8675462, 112.680094),
+      const PointLatLng(-7.950982275096204, 112.6397738845435),
+    );
+    if (result.points.isNotEmpty) {
+      for (var point in result.points) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      }
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    setCustomMarkerIcon();
+    super.initState();
+  }
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -26,6 +74,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         _center = LatLng(value.latitude!, value.longitude!);
       });
     });
+    getPolyPoints();
   }
 
   @override
@@ -36,12 +85,21 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       body: Stack(
         children: [
           GoogleMap(
+            polylines: {
+              Polyline(
+                polylineId: const PolylineId("route"),
+                points: polylineCoordinates,
+                color: colorScheme.primary,
+                width: 6,
+              ),
+            },
             onMapCreated: _onMapCreated,
             markers: {
-              const Marker(
-                markerId: MarkerId('Toyek'),
-                position: LatLng(-7.8675462, 112.680094),
-              )
+              Marker(
+                markerId: const MarkerId("destination"),
+                position: destination,
+                icon: destinationIcon,
+              ),
             },
             initialCameraPosition: CameraPosition(
               target: _center!,
