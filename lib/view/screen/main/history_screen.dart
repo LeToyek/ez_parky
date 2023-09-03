@@ -14,10 +14,18 @@ class HistoryScreen extends ConsumerStatefulWidget {
 class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   late GoogleMapController mapController;
 
-  final LatLng _center = const LatLng(45.521563, -122.677433);
+  LatLng? _center = const LatLng(-7.8675462, 112.680094);
+  bool _isMapCreated = false;
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    final resLocation = _currentLocation();
+    resLocation.then((value) {
+      setState(() {
+        _isMapCreated = true;
+        _center = LatLng(value.latitude!, value.longitude!);
+      });
+    });
   }
 
   @override
@@ -25,12 +33,23 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      body: GoogleMap(
-        onMapCreated: _onMapCreated,
-        initialCameraPosition: CameraPosition(
-          target: _center,
-          zoom: 11.0,
-        ),
+      body: Stack(
+        children: [
+          GoogleMap(
+            onMapCreated: _onMapCreated,
+            markers: {
+              const Marker(
+                markerId: MarkerId('Toyek'),
+                position: LatLng(-7.8675462, 112.680094),
+              )
+            },
+            initialCameraPosition: CameraPosition(
+              target: _center!,
+              zoom: 11.0,
+            ),
+          ),
+          if (!_isMapCreated) const Center(child: CircularProgressIndicator())
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         isExtended: true,
@@ -52,11 +71,20 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     );
   }
 
-  void _currentLocation() async {
+  Future<LocationData> _currentLocation() async {
     LocationData currentLocation;
     var location = Location();
     try {
       currentLocation = await location.getLocation();
+      mapController.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          bearing: 0,
+          target: LatLng(currentLocation.latitude!, currentLocation.longitude!),
+          zoom: 17.0,
+        ),
+      ));
+      print("currentLocation: $currentLocation");
+      return currentLocation;
     } on Exception catch (e) {
       showDialog(
         context: context,
@@ -74,15 +102,14 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           );
         },
       );
-      return;
+      rethrow;
     }
+  }
 
-    mapController.animateCamera(CameraUpdate.newCameraPosition(
-      CameraPosition(
-        bearing: 0,
-        target: LatLng(currentLocation.latitude!, currentLocation.longitude!),
-        zoom: 17.0,
-      ),
-    ));
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    mapController.dispose();
   }
 }
