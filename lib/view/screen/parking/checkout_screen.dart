@@ -25,7 +25,6 @@ class CheckoutScreen extends ConsumerStatefulWidget {
 class CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   late MobileScannerController controller;
   late bool _isScanned;
-  final bool _isProcessing = false;
 
   @override
   void initState() {

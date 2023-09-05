@@ -7,6 +7,8 @@ class ParkingGate {
   final int price;
   final int capacity;
   final String sensorID;
+  final double latitude;
+  final double longitude;
   DurationModel? duration;
 
   ParkingGate(
@@ -14,7 +16,9 @@ class ParkingGate {
       required this.price,
       required this.capacity,
       required this.sensorID,
-      this.duration});
+      this.duration,
+      required this.latitude,
+      required this.longitude});
 
   factory ParkingGate.fromJson(DocumentSnapshot json) {
     return ParkingGate(
@@ -22,6 +26,8 @@ class ParkingGate {
       price: json['price'],
       capacity: json['capacity'],
       sensorID: json['sensors_id'],
+      latitude: json['latitude'],
+      longitude: json['longitude'],
     );
   }
 }

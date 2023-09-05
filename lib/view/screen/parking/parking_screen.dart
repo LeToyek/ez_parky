@@ -49,6 +49,7 @@ class _ParkingScreenState extends ConsumerState<ParkingScreen> {
                   child: Center(child: CircularProgressIndicator())),
               data: (data) {
                 final parkingGate = data;
+                print("data: $data");
                 final availParking = parkingGate.capacity - _filledCarCounter;
                 final colorIcon = availParking < parkingGate.capacity
                     ? Colors.green
@@ -97,6 +98,7 @@ class _ParkingScreenState extends ConsumerState<ParkingScreen> {
               }),
           parkSpot.when(
             data: (data) {
+              print("data parkir: $data");
               _filledCarCounter = 0;
               for (var element in data) {
                 if (element != null && element['isEmpty'] == 1) {

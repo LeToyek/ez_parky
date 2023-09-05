@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ez_parky/repository/model/parking_gate_model.dart';
 
@@ -12,6 +14,21 @@ class ParkingGateService {
       final res = await parkingGate.doc(id).get();
       final data = ParkingGate.fromJson(res);
       data.id = id;
+      return data;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<List<ParkingGate>> getAllParkingGates() async {
+    try {
+      final res = await parkingGate.get();
+      final data = res.docs.map((e) {
+        print("gates ${jsonEncode(e.data())}");
+        final parkingGate = ParkingGate.fromJson(e);
+        parkingGate.id = e.id;
+        return parkingGate;
+      }).toList();
       return data;
     } catch (e) {
       rethrow;

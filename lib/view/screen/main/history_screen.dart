@@ -1,3 +1,6 @@
+import 'package:ez_parky/repository/model/parking_gate_model.dart';
+import 'package:ez_parky/repository/provider/parking_location_provider.dart';
+import 'package:ez_parky/view/widgets/ez_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -21,10 +24,13 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   bool _isMapCreated = false;
 
   LatLng destination = const LatLng(-7.950982275096204, 112.6397738845435);
+  LatLng userDestination = const LatLng(-7.950982275096204, 112.6397738845435);
 
   BitmapDescriptor sourceIcon = BitmapDescriptor.defaultMarker;
   BitmapDescriptor destinationIcon = BitmapDescriptor.defaultMarker;
   BitmapDescriptor currentLocationIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor userLocationIcon = BitmapDescriptor.defaultMarker;
+
   void setCustomMarkerIcon() {
     BitmapDescriptor.fromAssetImage(
             ImageConfiguration.empty, "lib/assets/pin_destination.png")
@@ -40,20 +46,30 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         currentLocationIcon = icon;
       },
     );
+    BitmapDescriptor.fromAssetImage(
+            const ImageConfiguration(size: Size(5, 5), devicePixelRatio: 2),
+            "lib/assets/user_pin.png")
+        .then((value) => userLocationIcon = value);
   }
 
-  void getPolyPoints() async {
+  void getPolyPoints({required double desLat, required double desLng}) async {
+    polylineCoordinates.clear();
+    final currentLocation = await _currentLocation();
+    destination = LatLng(desLat, desLng);
     PolylinePoints polylinePoints = PolylinePoints();
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
       dotenv.env['GOOGLE_MAP_API_KEY']!,
-      const PointLatLng(-7.8675462, 112.680094),
-      const PointLatLng(-7.950982275096204, 112.6397738845435),
+      PointLatLng(currentLocation.latitude!, currentLocation.longitude!),
+      PointLatLng(destination.latitude, destination.longitude),
     );
     if (result.points.isNotEmpty) {
       for (var point in result.points) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
       }
-      setState(() {});
+    }
+    setState(() {});
+    if (context.mounted) {
+      context.pop();
     }
   }
 
@@ -74,40 +90,79 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         _center = LatLng(value.latitude!, value.longitude!);
       });
     });
-    getPolyPoints();
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final parkingGates = ref.watch(parkingLocationProvider);
     return Scaffold(
-      body: Stack(
-        children: [
-          GoogleMap(
-            polylines: {
-              Polyline(
-                polylineId: const PolylineId("route"),
-                points: polylineCoordinates,
-                color: colorScheme.primary,
-                width: 6,
-              ),
-            },
-            onMapCreated: _onMapCreated,
-            markers: {
-              Marker(
-                markerId: const MarkerId("destination"),
-                position: destination,
-                icon: destinationIcon,
-              ),
-            },
-            initialCameraPosition: CameraPosition(
-              target: _center!,
-              zoom: 11.0,
-            ),
-          ),
-          if (!_isMapCreated) const Center(child: CircularProgressIndicator())
-        ],
+      body: SafeArea(
+        child: Stack(
+          children: [
+            parkingGates.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stackTrace) => Center(
+                      child: Text(error.toString()),
+                    ),
+                data: (data) {
+                  final gates = data;
+                  final gatesMarker = gates.map((e) {
+                    return Marker(
+                      markerId: MarkerId(e.id!),
+                      position: LatLng(e.latitude, e.longitude),
+                      icon: sourceIcon,
+                      onTap: () =>
+                          showDestinationModal(textTheme, colorScheme, e),
+                    );
+                  }).toList();
+                  return GoogleMap(
+                    polylines: {
+                      Polyline(
+                        polylineId: const PolylineId("route"),
+                        points: polylineCoordinates,
+                        color: colorScheme.primary,
+                        width: 6,
+                      ),
+                    },
+                    onMapCreated: _onMapCreated,
+                    markers: gatesMarker.toSet(),
+                    initialCameraPosition: CameraPosition(
+                      target: _center!,
+                      zoom: 11.0,
+                    ),
+                  );
+                }),
+            polylineCoordinates.isNotEmpty
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: EzCard(
+                        isShadow: true,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text("data"),
+                                IconButton(
+                                    onPressed: () {
+                                      print("clear");
+                                      setState(() {
+                                        polylineCoordinates.clear();
+                                      });
+                                    },
+                                    icon: const Icon(Icons.cancel_outlined))
+                              ],
+                            )
+                          ],
+                        )),
+                  )
+                : Container(),
+            if (!_isMapCreated) const Center(child: CircularProgressIndicator())
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         isExtended: true,
@@ -134,10 +189,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     var location = Location();
     try {
       currentLocation = await location.getLocation();
+      userDestination =
+          LatLng(currentLocation.latitude!, currentLocation.longitude!);
       mapController.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           bearing: 0,
-          target: LatLng(currentLocation.latitude!, currentLocation.longitude!),
+          target: userDestination,
           zoom: 17.0,
         ),
       ));
@@ -162,6 +219,80 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       );
       rethrow;
     }
+  }
+
+  void showDestinationModal(
+      TextTheme textTheme, ColorScheme colorScheme, ParkingGate e) {
+    showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(24),
+        ),
+      ),
+      useSafeArea: true,
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(
+              height: 16,
+            ),
+            Text(
+              e.location,
+              style: textTheme.headlineSmall!.apply(fontWeightDelta: 2),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            const ListTile(
+              leading: Icon(Icons.location_on),
+              title: Text("Jl. Raya Tenggilis No. 1"),
+              subtitle: Text("Surabaya, Jawa Timur"),
+            ),
+            const ListTile(
+              leading: Icon(Icons.access_time),
+              title: Text("Jam Buka"),
+              subtitle: Text("08.00 - 22.00"),
+            ),
+            ListTile(
+              leading: const Icon(Icons.monetization_on),
+              title: const Text("Tarif"),
+              subtitle: Text("Rp. ${e.price} / jam"),
+            ),
+            ListTile(
+              leading: const Icon(Icons.local_parking),
+              title: const Text("Kapasitas"),
+              subtitle: Text(e.capacity.toString()),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          getPolyPoints(
+                              desLat: e.latitude, desLng: e.longitude);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.all(16.0),
+                        ),
+                        child: Text(
+                          "Menuju Lokasi",
+                          style: textTheme.bodyLarge!.apply(
+                              fontWeightDelta: 2,
+                              fontSizeDelta: 4,
+                              color: colorScheme.onPrimary),
+                        )),
+                  ),
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
   }
 
   @override
