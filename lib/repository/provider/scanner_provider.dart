@@ -4,7 +4,6 @@ import 'package:ez_parky/repository/model/parking_gate_model.dart';
 import 'package:ez_parky/services/duration_service.dart';
 import 'package:ez_parky/services/parking_gate_service.dart';
 import 'package:ez_parky/services/wallet_service.dart';
-import 'package:ez_parky/utils/formatter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -50,8 +49,8 @@ class ScannerNotifier extends StateNotifier<AsyncValue<ParkingGate>> {
 
   Future<bool> checkOutPayment(int price) async {
     try {
-      final res = await _walletService.decreaseWalletValue(price,
-          "Checkout parkir ${parkingGateData.location} sebesar Rp ${formatMoney(price)}");
+      final res = await _walletService.decreaseWalletValue(
+          price, "Checkout parkir ${parkingGateData.location} ");
       if (res) {
         await DurationService.clearDurationCache();
         await DurationService.setFinalResponses(state.value!, price);

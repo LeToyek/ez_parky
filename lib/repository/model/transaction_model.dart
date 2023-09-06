@@ -1,17 +1,19 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class TransactionModel {
   final int value;
-  String? createdAt;
-  String? updatedAt;
-  String? logType;
-  String? logMessage;
+  final String createdAt;
+  final String updatedAt;
+  final String logType;
+  final String logMessage;
   TransactionModel({
     required this.value,
-    this.createdAt,
-    this.updatedAt,
-    this.logType,
-    this.logMessage,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.logType,
+    required this.logMessage,
   });
 
   TransactionModel copyWith({
@@ -71,7 +73,7 @@ class TransactionModel {
         logMessage.hashCode;
   }
 
-  factory TransactionModel.fromMap(Map<String, dynamic> map) {
+  factory TransactionModel.fromMap(DocumentSnapshot<Object?> map) {
     return TransactionModel(
       value: map['value']?.toInt() ?? 0,
       createdAt: map['createdAt'],

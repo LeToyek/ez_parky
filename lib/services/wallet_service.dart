@@ -23,7 +23,7 @@ class WalletService {
             createdAt: timeNow,
             updatedAt: timeNow,
             logType: '[ADD]',
-            logMessage: 'Menambah saldo sebanyak Rp ${formatMoney(inputValue)}')
+            logMessage: 'Menambah saldo')
         .toMap());
     userRef.update({"wallet.value": FieldValue.increment(inputValue)});
   }

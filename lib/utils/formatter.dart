@@ -13,3 +13,12 @@ String formatUniversalTime(String inputTime) {
 
   return formattedTime;
 }
+
+String formatUniversalDate(String inputTime) {
+  DateTime parsedTime = DateTime.parse(inputTime);
+
+  String formattedTime =
+      "${parsedTime.day.toString().padLeft(2, '0')}/${parsedTime.month.toString().padLeft(2, '0')}/${parsedTime.year.toString().padLeft(2, '0')}";
+
+  return formattedTime;
+}

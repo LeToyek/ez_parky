@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ez_parky/repository/model/transaction_model.dart';
 import 'package:ez_parky/repository/model/wallet_model.dart';
 
 class UserModel {
@@ -8,6 +9,7 @@ class UserModel {
   final String name;
   final String imageUrl;
   final WalletModel wallet;
+  List<TransactionModel>? transactions;
   String? createdAt;
   String? updatedAt;
 
@@ -18,6 +20,7 @@ class UserModel {
     required this.wallet,
     this.createdAt,
     this.updatedAt,
+    this.transactions,
   });
 
   UserModel copyWith({
@@ -91,5 +94,9 @@ class UserModel {
         wallet.hashCode ^
         createdAt.hashCode ^
         updatedAt.hashCode;
+  }
+
+  void setTransactions(List<TransactionModel> transactions) {
+    this.transactions = transactions;
   }
 }
