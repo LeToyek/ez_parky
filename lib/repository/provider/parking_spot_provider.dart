@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:ez_parky/constants.dart';
 import 'package:ez_parky/services/parking_gate_service.dart';
@@ -21,7 +20,6 @@ class ParkingSpotNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {
     print("parkingGate: $parkingGate");
     try {
       _onDataAddedSubscription = ref.onValue.listen((event) {
-        print("event: ${jsonEncode(event.snapshot.value)}");
         _originalList = event.snapshot.value as List<Object?>;
         _parkingSpotData = _originalList.map((e) {
           return e as Map<dynamic, dynamic>;
@@ -29,6 +27,7 @@ class ParkingSpotNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {
         state = AsyncValue.data(_parkingSpotData);
       });
     } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
       print("errorss $e");
       rethrow;
     }

@@ -5,21 +5,28 @@ import 'package:ez_parky/services/duration_service.dart';
 import 'package:ez_parky/services/parking_gate_service.dart';
 import 'package:ez_parky/services/wallet_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class ScannerNotifier extends StateNotifier<AsyncValue<ParkingGate>> {
   late ParkingGate parkingGateData;
   final WalletService _walletService = WalletService();
+  final DatabaseReference dbRef =
+      FirebaseDatabase.instance.ref("/Usonic1ChGate");
+  final DatabaseReference dbOutRef =
+      FirebaseDatabase.instance.ref("/Usonic1ChGateOUT");
   ScannerNotifier() : super(const AsyncValue.loading());
 
   Future<ParkingGate> getParkingGate(String id) async {
     try {
       const AsyncValue.loading();
+
       final parkingGate = await ParkingGateService.getParkingGate(id);
       Hive.box(boxName).put(ParkingGateService.gateBoxName, parkingGate.id);
       state = AsyncValue.data(parkingGate);
       parkingGateData = parkingGate;
+      await dbRef.update({"isOpen": true});
       return parkingGate;
     } on FirebaseException {
       rethrow;
@@ -57,6 +64,7 @@ class ScannerNotifier extends StateNotifier<AsyncValue<ParkingGate>> {
         await ParkingGateService.increaseGateIncome(state.value!.id!, price);
         state.value!.duration!.end = DateTime.now().toString();
         state.value!.duration!.price = price;
+        await dbOutRef.update({"isOpen": true});
         return true;
       }
       return false;

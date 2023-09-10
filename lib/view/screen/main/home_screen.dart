@@ -69,14 +69,16 @@ class HomeScreen extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      ListView.builder(
-                          itemCount: data.transactions!.length,
-                          shrinkWrap: true,
-                          // physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            final transaction = data.transactions![index];
-                            return _logCard(transaction: transaction);
-                          }),
+                      Expanded(
+                        child: ListView.builder(
+                            itemCount: data.transactions!.length,
+                            shrinkWrap: true,
+                            // physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              final transaction = data.transactions![index];
+                              return _logCard(transaction: transaction);
+                            }),
+                      ),
                     ],
                   ),
                 ),

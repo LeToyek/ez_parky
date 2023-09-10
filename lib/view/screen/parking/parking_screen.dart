@@ -34,6 +34,7 @@ class _ParkingScreenState extends ConsumerState<ParkingScreen> {
               return SliverAppBar(
                 flexibleSpace: FlexibleSpaceBar(
                   title: Text(data.location),
+                  centerTitle: true,
                 ),
               );
             },
@@ -43,13 +44,13 @@ class _ParkingScreenState extends ConsumerState<ParkingScreen> {
                 child: Center(child: CircularProgressIndicator())),
           ),
           parkingData.when(
-              error: (error, stackTrace) =>
-                  SliverToBoxAdapter(child: Text(error.toString())),
+              error: (error, stackTrace) => SliverToBoxAdapter(
+                  child: Center(child: Text(error.toString()))),
               loading: () => const SliverToBoxAdapter(
                   child: Center(child: CircularProgressIndicator())),
               data: (data) {
                 final parkingGate = data;
-                print("data: $data");
+
                 final availParking = parkingGate.capacity - _filledCarCounter;
                 final colorIcon = availParking < parkingGate.capacity
                     ? Colors.green
@@ -128,8 +129,8 @@ class _ParkingScreenState extends ConsumerState<ParkingScreen> {
                     );
                   });
             },
-            error: (error, stackTrace) =>
-                SliverToBoxAdapter(child: Text(error.toString())),
+            error: (error, stackTrace) => SliverToBoxAdapter(
+                child: Center(child: Text(error.toString()))),
             loading: () => const SliverToBoxAdapter(
                 child: Center(child: CircularProgressIndicator())),
           ),

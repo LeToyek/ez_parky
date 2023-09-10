@@ -47,97 +47,109 @@ class _WalletManagerScreenState extends ConsumerState<WalletManagerScreen> {
           ]),
           elevation: .3,
         ),
-        backgroundColor: colorScheme.background,
+        backgroundColor: colorScheme.surface,
         body: TabBarView(
           children: [
             _buildQuickPage(textTheme, colorScheme),
             _buildOtherPage(textTheme, colorScheme)
           ],
         ),
+        bottomNavigationBar: Container(
+          padding: const EdgeInsets.all(12),
+          child: GestureDetector(
+            onTap: () =>
+                _onPayTopUp(context: context, value: selectedTopUpValue),
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: colorScheme.primary),
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Top up",
+                    style: textTheme.bodyLarge!.apply(
+                        fontSizeDelta: 4,
+                        fontWeightDelta: 3,
+                        color: Colors.white),
+                  ),
+                  Text(
+                    "Rp ${formatMoney(selectedTopUpValue)}",
+                    style: textTheme.bodyLarge!.apply(
+                        fontSizeDelta: 4,
+                        fontWeightDelta: 3,
+                        color: Colors.white),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildQuickPage(TextTheme textTheme, ColorScheme colorScheme) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          EzCard(
-            padding: const EdgeInsets.all(12),
-            child: Expanded(
-              child: Column(
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: EzCard(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Isi Manual",
+                style: textTheme.labelLarge!
+                    .apply(fontWeightDelta: 2, fontSizeDelta: 4),
+                textAlign: TextAlign.start,
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              TextField(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    hintText: "Masukkan nominal top up"),
+                keyboardType: TextInputType.number,
+                onChanged: (value) => setState(() {
+                  selectedTopUpValue = int.parse(value);
+                }),
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              Text(
+                "Pilih nominal uang",
+                style: textTheme.labelLarge!  
+                    .apply(fontWeightDelta: 2, fontSizeDelta: 4),
+                textAlign: TextAlign.start,
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                crossAxisCount: 3,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        "Pilih nominal uang",
-                        style: textTheme.labelLarge!
-                            .apply(fontWeightDelta: 2, fontSizeDelta: 4),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  SizedBox(
-                      height: 300,
-                      child: GridView.count(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                        crossAxisCount: 3,
-                        children: [
-                          ...List.generate(6, (index) {
-                            final iconCard = widget.nominalValue[index]['icon'];
-                            final topUpValue =
-                                widget.nominalValue[index]['value'];
-                            return _buildMoneyCard(
-                                textTheme: textTheme,
-                                iconCard: iconCard,
-                                topUpValue: topUpValue);
-                          })
-                        ],
-                      ))
+                  ...List.generate(6, (index) {
+                    final iconCard = widget.nominalValue[index]['icon'];
+                    final topUpValue = widget.nominalValue[index]['value'];
+                    return _buildMoneyCard(
+                        textTheme: textTheme,
+                        iconCard: iconCard,
+                        topUpValue: topUpValue);
+                  })
                 ],
               ),
-            ),
+            ],
           ),
-          const Spacer(),
-          Container(
-            padding: const EdgeInsets.all(12),
-            child: GestureDetector(
-              onTap: () =>
-                  _onPayTopUp(context: context, value: selectedTopUpValue),
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: colorScheme.primary),
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Bayar",
-                      style: textTheme.bodyLarge!.apply(
-                          fontSizeDelta: 4,
-                          fontWeightDelta: 3,
-                          color: Colors.white),
-                    ),
-                    Text(
-                      "Rp ${formatMoney(selectedTopUpValue)}",
-                      style: textTheme.bodyLarge!.apply(
-                          fontSizeDelta: 4,
-                          fontWeightDelta: 3,
-                          color: Colors.white),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          )
-        ],
+        ),
       ),
     );
   }

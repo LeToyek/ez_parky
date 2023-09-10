@@ -1,7 +1,10 @@
+import 'dart:ui' as ui;
+
 import 'package:ez_parky/repository/model/parking_gate_model.dart';
 import 'package:ez_parky/repository/provider/parking_location_provider.dart';
 import 'package:ez_parky/view/widgets/ez_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,6 +34,16 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   BitmapDescriptor currentLocationIcon = BitmapDescriptor.defaultMarker;
   BitmapDescriptor userLocationIcon = BitmapDescriptor.defaultMarker;
 
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
+  }
+
   void setCustomMarkerIcon() {
     BitmapDescriptor.fromAssetImage(
             ImageConfiguration.empty, "lib/assets/pin_destination.png")
@@ -46,10 +59,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         currentLocationIcon = icon;
       },
     );
-    BitmapDescriptor.fromAssetImage(
-            const ImageConfiguration(size: Size(5, 5), devicePixelRatio: 2),
-            "lib/assets/user_pin.png")
-        .then((value) => userLocationIcon = value);
+    getBytesFromAsset("lib/assets/user_pin.png", 100).then((value) {
+      userLocationIcon = BitmapDescriptor.fromBytes(value);
+    });
   }
 
   void getPolyPoints({required double desLat, required double desLng}) async {
@@ -127,7 +139,13 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       ),
                     },
                     onMapCreated: _onMapCreated,
-                    markers: gatesMarker.toSet(),
+                    markers: {
+                      ...gatesMarker.toSet(),
+                      Marker(
+                          markerId: const MarkerId("user"),
+                          position: userDestination,
+                          icon: userLocationIcon)
+                    },
                     initialCameraPosition: CameraPosition(
                       target: _center!,
                       zoom: 11.0,

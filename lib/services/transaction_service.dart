@@ -13,7 +13,8 @@ class TransactionService {
   }
   Future<List<TransactionModel>> getTransactions() async {
     try {
-      final res = await _transactionRef.orderBy("createdAt").get();
+      final res =
+          await _transactionRef.orderBy("createdAt", descending: true).get();
       final data = res.docs.map((e) => TransactionModel.fromMap(e)).toList();
       return data;
     } catch (e) {

@@ -98,11 +98,13 @@ class IndexScreen extends ConsumerWidget {
         return const SettingScreen();
       case 4:
         return ProfileScreen(
+          providers: [],
           actions: [
             SignedOutAction((context) {
               context.pushReplacement('/sign-in');
             })
           ],
+          children: const [],
         );
       default:
         return Container();

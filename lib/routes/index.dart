@@ -29,7 +29,46 @@ final _appRoutes =
     builder: (context, state) => const IndexScreen(),
   ),
   GoRoute(
-    path: '/sign-in',
+    name: "sign-in",
+    path: "/sign-in",
+    builder: (context, state) => SignInScreen(
+      actions: [
+        AuthStateChangeAction<SignedIn>((context, state) async {
+          await UserService.initUserData();
+          if (context.mounted) {
+            context.pushReplacement(IndexScreen.routePath);
+          }
+        }),
+      ],
+      headerBuilder: (context, constraints, shrinkOffset) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+        child: const Center(
+          child: Text(
+            'Logo',
+            style: TextStyle(
+              fontSize: 40,
+              color: Colors.black,
+            ),
+          ),
+        ),
+      ),
+      footerBuilder: (context, action) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Text(
+              action == AuthAction.signIn
+                  ? 'By signing in, you agree to our terms and conditions.'
+                  : 'By registering, you agree to our terms and conditions.',
+              style: const TextStyle(color: Colors.grey),
+            ),
+          ),
+        );
+      },
+    ),
+  ),
+  GoRoute(
+    path: '/sign-ina',
     builder: (context, state) => StatefulBuilder(builder: (context, setState) {
       bool isProcessing = false;
       return Consumer(builder: (context, ref, _) {
